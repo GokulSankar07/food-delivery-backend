@@ -5,6 +5,7 @@ const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const http = require("http");
 const { Server } = require("socket.io");
+
 require('dotenv').config();
 console.log('dotenv loaded');
 
@@ -24,17 +25,23 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 // Root route for testing
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+  console.log("dotenv loaded");
+}
 app.get('/', (req, res) => {
   res.send('Backend is working!');
 });
 
 // ---------------- MongoDB Connection ----------------
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => console.log('MongoDB connected'))
-.catch(err => console.error('MongoDB connection error:', err));
+console.log("MONGO_URI =", process.env.MONGO_URI);
+
+mongoose
+  .connect(process.env.MONGO_URI, {
+    // No need for useNewUrlParser or useUnifiedTopology anymore
+  })
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 // ---------------- Create HTTP + Socket.IO Server ----------------
 const server = http.createServer(app);
