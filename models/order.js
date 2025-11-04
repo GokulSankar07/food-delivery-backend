@@ -15,7 +15,17 @@ const orderSchema = new mongoose.Schema(
     total: { type: Number, required: true },
     status: {
       type: String,
-      enum: ["Order Placed", "Accepted", "On the Way", "Delivered", "Cancelled"],
+      enum: [
+        "Order Placed",
+        "Accepted",
+        "Preparing",
+        "Ready for Pickup",
+        "Picked Up",
+        "On the Way",
+        "Delivered",
+        "Cancelled",
+        "Rejected"
+      ],
       default: "Order Placed",
     },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },

@@ -12,8 +12,9 @@ router.post("/signup", async (req, res) => {
       return res.status(400).json({ message: "Username, email, and password are required." });
     }
 
-    // Check if email already exists
-    const existingUser = await User.findOne({ email: email.trim() });
+    // Normalize email to lowercase and check if it already exists
+    const normalizedEmail = email.trim().toLowerCase();
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       return res.status(400).json({ message: "Email already registered" });
     }
@@ -21,7 +22,7 @@ router.post("/signup", async (req, res) => {
     // Create new user (password will be hashed automatically)
     const user = new User({
       username: username.trim(),
-      email: email.trim(),
+      email: normalizedEmail,
       password: password.trim(),
       phone: phone?.trim(),
       role: role || "user",
@@ -33,7 +34,7 @@ router.post("/signup", async (req, res) => {
     const { password: _, ...userData } = user.toObject();
 
     res.status(201).json({
-      message: "Signin Successful",  // ✅ matches frontend check
+      message: "Signup Successful",
       user: userData,
     });
   } catch (err) {
@@ -54,7 +55,7 @@ router.post("/signin", async (req, res) => {
       return res.status(400).json({ message: "Email and password are required." });
     }
 
-    const user = await User.findOne({ email: email.trim() });
+    const user = await User.findOne({ email: email.trim().toLowerCase() });
     if (!user) return res.status(401).json({ message: "Invalid email or password" });
 
     const isMatch = await bcrypt.compare(password.trim(), user.password);
@@ -63,7 +64,7 @@ router.post("/signin", async (req, res) => {
     const { password: _, ...userData } = user.toObject();
 
     res.status(200).json({
-      message: "Signin Successful",  // ✅ matches frontend check
+      message: "Signin Successful",
       user: userData,
     });
   } catch (err) {

@@ -4,6 +4,17 @@ const Restaurant = require("../models/restaurant");
 const bcrypt = require("bcryptjs");
 const Order = require("../models/order");
 
+// ---------------- List all restaurants ----------------
+router.get("/", async (req, res) => {
+  try {
+    const restaurants = await Restaurant.find({}, "restaurantName address ownerName");
+    res.json(restaurants || []);
+  } catch (err) {
+    console.error("List restaurants error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 // ---------------- Register ----------------
 router.post("/register", async (req, res) => {
   try {
